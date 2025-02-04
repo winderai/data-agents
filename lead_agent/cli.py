@@ -29,7 +29,7 @@ def display_welcome():
     
     - Show me all leads from last month
     - How many leads did we get this month?
-    - What are our most valuable opportunities?
+    - Show me more detail about lead 56. What is the budget? What are the timelines?
     """
     console.print(Panel(Markdown(welcome_md), title="Welcome", border_style="blue"))
 
