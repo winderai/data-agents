@@ -28,8 +28,8 @@ def display_welcome():
     Query your sales leads using natural language. Some example queries:
     
     - Show me all leads from last month
-    - How many leads did we get this month?
-    - Show me more detail about lead 56. What is the budget? What are the timelines?
+    - How many leads did we get thShow me more detail about lead 46. What is the budget? What are the timelines?is month?
+    - Show me more detail about lead 46. What is the budget? What are the timelines?
     """
     console.print(Panel(Markdown(welcome_md), title="Welcome", border_style="blue"))
 

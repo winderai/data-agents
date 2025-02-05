@@ -25,22 +25,23 @@ class LeadAgent:
         """Execute a SQL query against the leads database"""
         # Clean and validate the SQL query
         query = query.strip()
-        if query.endswith(';'):
-            query = query[:-1]  # Remove trailing semicolon
+        # remove anything after a semicolon, if it exists
+        if ';' in query:
+            query = query[:query.find(';')]
         return self.conn.execute(query).df()
 
     def process_query(self, query: str) -> str:
         """Convert natural language query to SQL"""
         prompt = f"""You are a SQL expert. Convert the following natural language query into SQL.
         The sales_leads table has columns: 
-        - id INTEGER
-        - customer_name VARCHAR
-        - company VARCHAR
-        - needs VARCHAR
-        - budget DECIMAL
-        - timeline_start DATE
-        - timeline_end DATE
-        - created_at TIMESTAMP
+        - id INTEGER # the unique identifier for the lead
+        - customer_name VARCHAR # the name of the lead
+        - company VARCHAR # the name of the company of the lead
+        - needs VARCHAR # the needs of the lead
+        - budget DECIMAL # the budget for the lead
+        - timeline_start DATE # the required start date of the lead's project
+        - timeline_end DATE # the required end date of the lead's project
+        - created_at TIMESTAMP # the date and time when the lead was created
         
         Query: {query}
         
@@ -48,7 +49,7 @@ class LeadAgent:
         Sort results by id for consistency.
         If searching, use ILIKE for case-insensitive matching.
         
-        Important: Return only a valid SQL query. Do not include backticks, markdown formatting, or any explanation.
+        Important: Return only a single valid SQL query. Do not include backticks, markdown formatting, any explanation, or multiple options.
         The query should be a simple SELECT statement that can be executed directly against the sales_leads table."""
         
         messages = [HumanMessage(content=prompt)]
@@ -87,10 +88,13 @@ class LeadAgent:
 
     def run(self, query: str) -> str:
         """Process a natural language query about leads"""
-        sql = self.process_query(query)
-        results = self.query_leads(sql)
-        response = self.format_response(results, query)
-        return response
+        try:
+            sql = self.process_query(query)
+            results = self.query_leads(sql)
+            response = self.format_response(results, query)
+            return response
+        except Exception as e:
+            raise Exception(f"An error occurred: {str(e)}. SQL: {sql}")
 
 def create_graph() -> Graph:
     """Create the langgraph workflow"""
